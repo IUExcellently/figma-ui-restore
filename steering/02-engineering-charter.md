@@ -18,6 +18,26 @@ font-family: ...;
 - 正常体 / Medium：`font-weight: 500`
 - 粗体 / Semibold / Bold：`font-weight: 600`
 
+## reference.tsx className 解析
+
+如果 Figma 提供的 `reference.tsx` 中 `className` 使用了 class 框架或原子类体系，必须先识别其语法和映射规则，再解析为对应 CSS 声明。
+
+常见来源包括：
+
+- Tailwind / UnoCSS 等原子类
+- CSS Modules 哈希类名
+- Figma 生成的自定义 class 框架
+- 项目或插件导出的工具类体系
+
+处理规则：
+
+1. 先判断 `className` 是否有可解析的框架语法、样式映射文件或生成规律。
+2. 能解析时，将 `className` 拆解为具体 CSS 声明，例如尺寸、间距、颜色、圆角、阴影、布局、状态样式。
+3. 解析出的 CSS 声明必须与 `meta.json`、Figma MCP 原始数据、设计截图真实渲染结果互相校验。
+4. 生成业务代码时，按目标项目样式方案输出 CSS / Less / SCSS / CSS Modules / Tailwind；除非目标项目本身使用同一套 class 框架，否则不允许原样复制 Figma 生成的 `className`。
+5. 如果 `className` 解析结果与 Figma 实际色值、尺寸或布局数据冲突，以 Figma 实际渲染结果和原始数据为准。
+6. 如果无法确认 class 框架含义，必须在开发前确认报告中列为风险，不得臆造映射。
+
 ## 设计变量文件
 
 允许 AI 在全局公共样式目录创建：
@@ -36,15 +56,42 @@ custom-figma-constant.less
 - `variables.less`
 - `theme.less`
 
-## 变量创建规则
+## 颜色类样式规则
 
-先查已有变量：
+颜色类样式以 Figma 实际色值为最高依据。
 
-1. 同色值 + 同语义存在：复用已有变量。
-2. 同色值但语义不同：优先复用基础色变量，必要时新增语义别名。
-3. 不存在：写入 `custom-figma-constant.less`。
+Figma 实际色值来源包括：
 
-变量必须语义命名，禁止使用 Figma 图层 ID 命名。
+- `meta.json`
+- `reference.tsx`
+- Figma MCP 原始数据
+- 设计截图中的真实渲染色值
+
+适用范围：
+
+- 字体颜色
+- 背景色
+- 边框色
+- 图标色
+- 阴影色
+- 渐变色
+- `hover` / `active` / `selected` 状态色
+
+颜色使用优先级：
+
+1. 先检查项目已有变量、design token、`custom-figma-constant.less` 中是否存在相同色值。
+2. 只有当变量色值与 Figma 实际色值完全一致时，才优先复用该变量。
+3. 如果变量语义相近，但色值与 Figma 实际色值不一致，不允许强行复用该变量。
+4. 如果没有相同色值，并且该颜色只在当前组件或当前模块内少量出现，允许直接在当前 class 中写具体色值。
+5. 如果没有相同色值，但该颜色重复出现，或属于页面级核心颜色，再沉淀到 `custom-figma-constant.less`。
+6. 新增变量必须使用 `@figma-` 前缀，禁止创建 `@color-*` 这种过于通用、容易和项目或 Arco 冲突的变量。
+7. 禁止为了“看起来更规范”而把 Figma 实际色值替换成项目中语义相近但色值不同的变量。
+8. 直接写色值时，必须写在当前 class 中，不允许使用行内 style。
+9. 不允许把 Figma 节点 ID、图层名、组件名直接用于变量命名。
+
+## 非颜色变量创建规则
+
+字号、行高、字重、圆角、间距、断点等非颜色值仍先查已有变量；缺失且重复出现时，再写入 `custom-figma-constant.less`。
 
 推荐：
 
@@ -64,7 +111,7 @@ custom-figma-constant.less
 
 ## 变量覆盖范围
 
-颜色、字号、行高、字重、圆角、阴影、间距、断点，只要重复出现两次及以上，优先抽为变量。
+颜色类样式按上方颜色优先级处理；字号、行高、字重、圆角、间距、断点等非颜色值，只要重复出现两次及以上，优先抽为变量。
 
 ## UI 组件库优先
 
@@ -90,4 +137,3 @@ custom-figma-constant.less
 - Logo 优先复用项目已有品牌资源。
 - 装饰图可下载到本地 assets，或用项目已有插画替换。
 - 装饰图必须 `pointer-events: none`，不参与主内容布局。
-

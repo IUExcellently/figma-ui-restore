@@ -11,12 +11,14 @@
 - 截图文件：
 - meta.json：
 - reference.tsx / 参考代码：
+- reference.tsx className 框架或规则：Tailwind / UnoCSS / CSS Modules / 自定义原子类 / 不确定
 
 ## 2. 项目技术栈
 
 - 框架：
 - UI 组件库：
 - 样式方案：
+- 是否允许沿用 reference.tsx 的 className 框架：是 / 否 / 不确定
 - 路由方案：
 - 请求封装：
 - 状态管理：
@@ -44,4 +46,3 @@
 - 
 - 
 - 
-

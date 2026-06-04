@@ -56,6 +56,7 @@ author: "Bel Veth"
 * 不要拿到 Figma 数据后直接写代码。
 * 不要机械复制 Figma 图层结构。
 * 不要直接照搬 Figma 生成的 React + Tailwind 参考代码。
+* 不要把 Figma `reference.tsx` 中框架化的 `className` 原样搬进业务代码。
 * 不要在组件内写 `font-family`。
 * 不要把 Figma MCP 临时资源 URL 写成生产资源。
 * 表格区域不手写，优先交给项目已有全局 Table 组件。
@@ -74,7 +75,16 @@ author: "Bel Veth"
 * 组件事件必须使用业务语义命名，例如 `view-detail`、`view-all`、`create-invite`，不要只暴露 `click` / `dblclick`。
 * 列表、状态、统计卡、快捷入口、告警条必须数据驱动，不要硬编码重复 DOM。
 * 组件接收 ViewModel，不直接依赖接口原始字段。
-* 设计 token 优先复用项目已有变量；没有时再创建或更新 `custom-figma-constant.less`。
+* 如果 `reference.tsx` 中的 `className` 来自 class 框架或原子类体系，必须先识别其语法和映射规则，再解析为对应 CSS 声明。
+* `className` 解析结果只能作为样式事实来源之一，需要与 `meta.json`、Figma MCP 原始数据、设计截图真实渲染结果互相校验。
+* 生成业务代码时，应按目标项目样式方案输出对应 CSS / Less / SCSS / CSS Modules / Tailwind 写法；除非目标项目本身使用同一套 class 框架，否则不允许原样复制 Figma 生成的 `className`。
+* 当 `className` 与 Figma 实际渲染色值、尺寸或布局数据冲突时，以 Figma 实际渲染结果和原始数据为准，并在开发前确认报告中标记风险。
+* 颜色类样式以 Figma 实际色值为最高依据；来源包括 `meta.json`、`reference.tsx`、Figma MCP 原始数据、设计截图中的真实渲染色值。
+* 字体颜色、背景色、边框色、图标色、阴影色、渐变色，以及 `hover` / `active` / `selected` 状态色，必须先查项目已有变量、design token、`custom-figma-constant.less` 是否有完全相同色值。
+* 只有变量色值与 Figma 实际色值完全一致时才复用；语义相近但色值不同的变量不允许强行复用。
+* 没有相同色值且只在当前组件或模块少量出现时，允许直接在当前 class 中写具体色值；没有相同色值但重复出现或属于页面级核心颜色时，再沉淀到 `custom-figma-constant.less`。
+* 新增颜色变量必须使用 `@figma-` 前缀，禁止创建 `@color-*` 这类过于通用、容易和项目或 Arco 冲突的变量；不允许把 Figma 节点 ID、图层名、组件名直接用于变量命名。
+* 直接写色值时不允许使用行内 style。
 * 字体 family 由项目根节点或全局样式统一控制，不在组件内声明。
 * 响应式必须按业务模块分别声明，不允许一刀切。
 * 组件之间的外部间距由父级页面或父级布局容器控制。
@@ -100,8 +110,11 @@ author: "Bel Veth"
 
 * 是否误生成全局 Layout
 * 是否忽略了组件内 `font-family`
-* 是否复用或创建了合理 design token
-* 是否存在裸色值或大量 magic number
+* 是否识别并解析了 `reference.tsx` 中框架化的 `className`
+* 是否把 `className` 解析结果转换成目标项目样式方案，而不是原样照搬
+* 颜色类样式是否遵循 Figma 实际色值优先、色值完全一致才复用变量
+* 直接写色值时是否仅写在当前 class 中，且没有使用行内 style
+* 是否存在大量 magic number
 * 组件拆分是否按业务模块进行
 * 事件是否语义化 emit
 * 是否把 router / api / store 放进展示组件

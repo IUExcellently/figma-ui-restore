@@ -18,6 +18,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * Figma 节点截图
 * Figma node metadata / layout json
 * Figma 生成的 React / Tailwind 参考代码
+* Figma 生成的带框架化 `className` 的 `reference.tsx`
 * UI 截图或人工补充的设计说明
 * 需要把后台管理页面还原为 Vue / React 前端代码
 
@@ -26,6 +27,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * 不要拿到 Figma 数据后直接写代码。
 * 不要机械复制 Figma 图层结构。
 * 不要直接照搬 Figma 生成的 React + Tailwind 参考代码。
+* 不要把 Figma `reference.tsx` 中框架化的 `className` 原样搬进业务代码。
 * 不要默认生成 Sidebar / Header / Logo / Menu 等全局 Layout。
 * 不要在组件内写 `font-family`。
 * 不要把 Figma MCP 临时资源 URL 写成生产资源。
@@ -94,6 +96,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * 当前只生成 content 区域，还是需要生成通用 Layout
 * 项目使用 Vue / React / 其他框架
 * 项目使用 Less / SCSS / CSS Modules / Tailwind
+* `reference.tsx` 中 `className` 使用的框架或规则，例如 Tailwind / UnoCSS / CSS Modules / 自定义原子类 / Figma 生成类名映射
 * 项目是否已有全局 design token
 * 项目是否已有全局 Table 组件
 * 项目是否已有 Card / Tag / Tooltip / Empty / Form 等基础组件
@@ -119,15 +122,29 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * 不管 Figma 节点中如何声明 `font-family`，组件内都必须忽略。
 * 字体 family 由项目根节点或全局样式统一控制。
 * 只还原 `font-size`、`line-height`、`font-weight`、颜色等非侵权排版属性。
+* 如果 `reference.tsx` 中的 `className` 来自 class 框架或原子类体系，必须先识别其语法和映射规则，再解析为对应 CSS 声明。
+* `className` 解析结果只能作为样式事实来源之一，需要与 `meta.json`、Figma MCP 原始数据、设计截图真实渲染结果互相校验。
+* 生成业务代码时，应按目标项目样式方案输出对应 CSS / Less / SCSS / CSS Modules / Tailwind 写法；除非目标项目本身使用同一套 class 框架，否则不允许原样复制 Figma 生成的 `className`。
+* 当 `className` 与 Figma 实际渲染色值、尺寸或布局数据冲突时，以 Figma 实际渲染结果和原始数据为准，并在开发前确认报告中标记风险。
 * 字重映射：
 
     * Regular / 细体：`font-weight: 400`
     * Medium / 正常体：`font-weight: 500`
     * Semibold / Bold / 粗体：`font-weight: 600`
-* 颜色、字号、行高、圆角、阴影、间距、断点优先复用项目已有变量。
-* 如果项目中没有对应变量，允许在全局公共样式目录中创建或更新 `custom-figma-constant.less`。
-* 创建变量前必须先检查当前项目是否已有同色值或同语义变量。
-* 变量命名必须语义化，不允许使用 Figma 节点 ID 或图层名污染代码。
+* 颜色类样式以 Figma 实际色值为最高依据；来源包括 `meta.json`、`reference.tsx`、Figma MCP 原始数据、设计截图中的真实渲染色值。
+* 颜色类样式覆盖字体颜色、背景色、边框色、图标色、阴影色、渐变色，以及 `hover` / `active` / `selected` 状态色。
+* 颜色使用优先级：
+
+    1. 先检查项目已有变量、design token、`custom-figma-constant.less` 中是否存在相同色值。
+    2. 只有当变量色值与 Figma 实际色值完全一致时，才优先复用该变量。
+    3. 如果变量语义相近，但色值与 Figma 实际色值不一致，不允许强行复用该变量。
+    4. 如果没有相同色值，并且该颜色只在当前组件或当前模块内少量出现，允许直接在当前 class 中写具体色值。
+    5. 如果没有相同色值，但该颜色重复出现，或属于页面级核心颜色，再沉淀到 `custom-figma-constant.less`。
+    6. 新增变量必须使用 `@figma-` 前缀，禁止创建 `@color-*` 这种过于通用、容易和项目或 Arco 冲突的变量。
+    7. 禁止为了“看起来更规范”而把 Figma 实际色值替换成项目中语义相近但色值不同的变量。
+    8. 直接写色值时，必须写在当前 class 中，不允许使用行内 style。
+    9. 不允许把 Figma 节点 ID、图层名、组件名直接用于变量命名。
+* 字号、行高、圆角、间距、断点等非颜色值仍优先复用项目已有变量；缺失且重复出现时可创建或更新 `custom-figma-constant.less`。
 
 ## 间距与布局规则
 
@@ -197,8 +214,11 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 
 * 是否误生成全局 Layout
 * 是否忽略了组件内 `font-family`
-* 是否复用或创建了合理 design token
-* 是否存在裸色值或大量 magic number
+* 是否识别并解析了 `reference.tsx` 中框架化的 `className`
+* 是否把 `className` 解析结果转换成目标项目样式方案，而不是原样照搬
+* 颜色类样式是否遵循 Figma 实际色值优先、色值完全一致才复用变量
+* 直接写色值时是否仅写在当前 class 中，且没有使用行内 style
+* 是否存在大量 magic number
 * 组件拆分是否按业务模块进行
 * 事件是否语义化 emit
 * 是否把 router / api / store 放进展示组件
