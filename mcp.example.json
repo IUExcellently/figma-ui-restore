@@ -1,0 +1,13 @@
+{
+  "note": "示例文件，不建议直接启用。不同环境中的 MCP server 名称和安装方式可能不同。Power / Skill 只要求：如果 Figma MCP 或 chrome-devtools MCP 已可用，则优先调用；如果不可用，则降级为结构化分析。",
+  "recommendedServers": [
+    {
+      "name": "figma/designToCodeWithFigma",
+      "purpose": "读取 Figma 节点、截图、结构化元数据和资源信息"
+    },
+    {
+      "name": "chrome-devtools",
+      "purpose": "打开本地页面、设置 viewport、截图并进行真实浏览器验收"
+    }
+  ]
+}
