@@ -19,6 +19,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * Figma node metadata / layout json
 * Figma 生成的 React / Tailwind 参考代码
 * Figma 生成的带框架化 `className` 的 `reference.tsx`
+* 同一页面多个尺寸的 Figma 源数据目录
 * UI 截图或人工补充的设计说明
 * 需要把后台管理页面还原为 Vue / React 前端代码
 
@@ -41,16 +42,17 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 ## 固定执行顺序
 
 1. 读取输入材料。
-2. 判断页面类型。
-3. 判断 Layout 边界。
-4. 检查项目上下文。
-5. 输出开发前确认报告。
-6. 停止并等待用户确认。
-7. 用户明确确认后再写代码。
-8. 输出代码实现与变更说明。
-9. 输出结构化自检报告。
-10. 如果 chrome-devtools MCP 可用，进行浏览器截图验收。
-11. 如果截图验收发现问题，先修复再复验。
+2. 判断输入类型：单尺寸 / 单页面多尺寸 / 同尺寸多状态 / 多页面多尺寸。
+3. 判断页面类型。
+4. 判断 Layout 边界。
+5. 检查项目上下文。
+6. 输出开发前确认报告。
+7. 停止并等待用户确认。
+8. 用户明确确认后再写代码。
+9. 输出代码实现与变更说明。
+10. 输出结构化自检报告。
+11. 如果 chrome-devtools MCP 可用，进行浏览器截图验收。
+12. 如果截图验收发现问题，先修复再复验。
 
 ## 规则文件读取策略
 
@@ -72,16 +74,20 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 
 在写代码前，必须先输出开发前确认报告。报告必须包含：
 
+* 单尺寸 / 多尺寸输入判断
 * 页面类型判断
 * Layout 是否已有
 * 本次生成范围：Layout / Content / 组件 / 局部模块
 * 项目技术栈与可复用组件扫描结果
+* 多尺寸源数据扫描结果（如存在）
+* 基准稿 / 参考稿 / 状态变体归类（如存在多尺寸或多状态）
 * 设计 token 映射方案
 * 是否需要创建或更新 `custom-figma-constant.less`
 * 组件拆分方案
 * ViewModel 数据模型草案
 * 语义化事件设计
 * 响应式策略表
+* Sidebar / Menu / Header 响应式归属确认
 * 资源处理方案
 * Icon 尺寸识别方案
 * 表格 / 表单 / 列表区域处理方案
@@ -94,6 +100,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 如果无法确认以下信息，必须先提出问题或扫描项目后再继续：
 
 * 项目是否已有后台 Layout
+* 项目全局 Layout 是否已有 Sidebar / Menu / Header 的响应式策略
 * 当前只生成 content 区域，还是需要生成通用 Layout
 * 项目使用 Vue / React / 其他框架
 * 项目使用 Less / SCSS / CSS Modules / Tailwind
@@ -109,6 +116,8 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 
 * 后台管理页面优先尊重项目已有 Layout。
 * Figma 里的 Sidebar / Header / Menu / Logo 默认视为全局 Layout，不默认生成到当前页面。
+* Sidebar / Menu / Header 属于全局 Layout 策略；如果项目已有 Layout，默认跟随项目现状，不得因为 Figma 某个尺寸隐藏了菜单就擅自修改 Layout。
+* 如果 Figma 多尺寸稿中 Sidebar / Menu / Header 存在差异，AI 只能识别并报告差异，必须由用户确认该差异归全局 Layout 处理还是本次页面处理。
 * Content 区域按业务模块拆分，不按 Figma 图层机械拆分。
 * 页面负责接口请求、路由跳转、权限判断、数据组装和业务编排。
 * 组件负责展示、局部交互和语义化 emit。
@@ -181,12 +190,21 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 
 要求：
 
+* 多尺寸源数据是增强输入，不是必需输入；只有单页面多尺寸源数据存在时，才启用多尺寸基准适配流程。
+* 单页面单尺寸 UI 继续沿用原有单稿还原流程；响应式策略可以按业务模块推导，但必须说明哪些断点是推导而非 Figma 明确给出的尺寸稿。
+* 单页面多尺寸 UI 以最大宽度的默认有数据态为基准开发；其他尺寸只作为模块级响应式参考。
+* 如果最大尺寸只有 empty / loading / error 状态，必须列为待确认项，不得直接把该状态作为基准稿。
+* 多页面多尺寸输入必须先按业务页面分组，不能只按尺寸分组；需结合 pageName、frameName、nodeId、目录名、截图命名、`meta.json` source 信息判断是否属于同一页面。
+* 同尺寸 empty / loading / error 等差异属于状态变体，不属于响应式断点。
 * 不要用一个断点规则粗暴控制所有模块。
 * 每个业务模块必须单独声明响应式行为。
 * 默认使用 flex / inline-flex / flex-wrap / flex-basis / media query。
 * 避免使用 inline-block 做主要布局。
 * 只有规整宫格、统计宫格、图片宫格等明确结构才优先使用 grid。
 * 后台页面优先关注 content 可用宽度，不要只机械依赖 viewport。
+* 响应式优先级：用户明确说明优先；全局 Layout 策略跟随项目现状；content 区域优先参考多尺寸 Figma；单尺寸时才使用通用响应式推导规则。
+* 如果多尺寸稿缺少 520，520 只作为工程验收断点，根据 768 和 375 的模块变化进行插值推导，不得创造与两侧尺寸冲突的新布局。
+* 多尺寸里的样例数据差异不能当成响应式规则；例如某个 item 在 375 的文案和 1440 不一致，只能视为 mock 数据差异，不能写成媒体查询逻辑。
 * 低于 375px 不作为主要适配目标，允许降级或横向滚动。
 * 没有移动端设计稿时，必须先输出响应式策略，不得直接写代码。
 
@@ -210,6 +228,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 
 * Figma MCP 临时资源 URL 不允许直接作为生产资源。
 * 装饰图、图标、Logo 必须下载到本地 assets，或替换成项目已有图标 / 资源。
+* 不同尺寸中同一装饰图或图标的 Figma 临时 URL 不一致时，不要直接当作不同生产资源；优先沉淀为同一项目本地资源，并通过 CSS 尺寸、位置、显隐策略适配。
 * 图标优先使用项目已有图标库。
 * 从 Figma 资源替换为项目 Icon / SVG 时，必须保留 Figma 语义图标容器尺寸；例如容器 `size-[24px]` 对应 `font-size: 24px` 或 `width/height: 24px`。
 * 如果项目使用 Arco Design，Figma 语义图标容器尺寸应映射到 Arco Icon 的 `size` 属性；例如 `size-[24px]` 落地为 `<icon-calendar-clock :size="24" class="rc__bottom-icon" />`，不额外包 DOM。

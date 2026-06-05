@@ -11,6 +11,12 @@
 - 截图文件：
 - meta.json：
 - reference.tsx / 参考代码：
+- 多尺寸源数据目录：
+- 是否包含多个业务页面：是 / 否 / 不确定
+- 是否包含状态变体：无 / empty / loading / error / 不确定
+- 默认有数据态节点或目录：
+- 最大尺寸节点或目录：
+- 520 尺寸稿是否存在：是 / 否 / 不确定
 - reference.tsx className 框架或规则：Tailwind / UnoCSS / CSS Modules / 自定义原子类 / 不确定
 - icon 尺寸规则备注：例如 24×24 容器 + 内部 Vector inset / 不确定
 
@@ -24,6 +30,9 @@
 - 请求封装：
 - 状态管理：
 - 全局 Layout 是否已存在：是 / 否 / 不确定
+- 全局 Layout 是否负责 Sidebar / Menu / Header 响应式：是 / 否 / 不确定
+- 768 及以下菜单策略：跟随项目 Layout / 隐藏 / 抽屉 / 顶部入口 / 完全不展示 / 待确认
+- 页面适配依据：viewport / content 可用宽度 / 不确定
 - 全局 Table 组件是否已存在：是 / 否 / 不确定
 
 ## 3. 本次希望生成范围

@@ -18,6 +18,41 @@ font-family: ...;
 - 正常体 / Medium：`font-weight: 500`
 - 粗体 / Semibold / Bold：`font-weight: 600`
 
+## 输入材料分流宪章
+
+多尺寸源数据是增强输入，不是必需输入。本 Skill / Power 仍保留原有单页面单尺寸还原逻辑。
+
+在写代码前必须先判断输入材料类型：
+
+1. 单页面单尺寸 UI：沿用现有单稿还原流程，响应式按业务模块推导，并说明哪些断点是推导策略。
+2. 单页面多尺寸 UI：启用多尺寸基准适配流程，以最大宽度的默认有数据态为基准开发，其他尺寸作为模块级响应式参考。
+3. 同尺寸多状态 UI：归类为状态变体，例如 empty / loading / error，不当作响应式断点。
+4. 多页面多尺寸 UI：先按业务页面分组，再在每个页面内部判断单尺寸或多尺寸。
+
+多页面分组不能只按尺寸判断，必须结合 pageName、frameName、nodeId、目录名、截图命名、`meta.json` source 信息判断是否属于同一业务页面，避免把不同页面混成一个多尺寸页面。
+
+如果最大宽度只有 empty / loading / error 状态，必须列为待确认项，不得直接作为默认基准稿。
+
+`metadata.xml` 只能作为可选输入；如果存在，则纳入参考。不能把 `metadata.xml` 写成强依赖。
+
+如果文件名无法识别尺寸，应从 `meta.json` 的 frame width / height、截图尺寸、目录名中推断；仍无法确认时列为待确认项。
+
+## Layout 响应式归属宪章
+
+Sidebar / Menu / Header 属于全局 Layout 策略。
+
+如果项目已有 Layout，默认跟随项目现有 Layout，不得因为 Figma 某个尺寸隐藏了菜单就擅自修改 Layout。页面 content 区域只根据真实可用宽度适配。
+
+如果多尺寸稿中 Sidebar / Menu / Header 在不同尺寸下不一致，AI 必须在开发前确认报告中说明：
+
+- 哪些尺寸包含 Sidebar / Menu / Header。
+- Sidebar 宽度是多少。
+- 哪些尺寸隐藏或缺失 Sidebar / Menu / Header。
+- 该差异应由全局 Layout 处理，还是本次页面处理。
+- 页面适配应基于 viewport，还是基于 Layout 后的 content 可用宽度。
+
+只有在项目没有既有 Layout，且用户明确要求生成整页时，才允许根据用户确认实现 Sidebar / Menu / Header 的隐藏、折叠、抽屉或展示策略。
+
 ## reference.tsx className 解析
 
 如果 Figma 提供的 `reference.tsx` 中 `className` 使用了 class 框架或原子类体系，必须先识别其语法和映射规则，再解析为对应 CSS 声明。
