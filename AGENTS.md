@@ -10,6 +10,8 @@
 - 已有 Layout 时只生成 content 区域。
 - 不在组件内写 font-family。
 - Figma `reference.tsx` 中框架化的 `className` 要先解析成 CSS 声明，再按目标项目样式方案实现；不要原样照搬。
+- icon 字号 / SVG 尺寸优先取语义图标容器或直接包裹层的 `size-[...]` / `w/h`，不要用内部 Vector / img 的 inset 切片尺寸。
+- 项目使用 Arco Design 时，icon 尺寸直接映射到 Icon 组件 `size` 属性，不额外包 DOM。
 - 颜色类样式以 Figma 实际色值优先，先查已有变量；只有色值完全一致才复用。
 - 没有相同色值时，少量局部颜色可直接写在当前 class；重复或页面级核心颜色再沉淀到 `custom-figma-constant.less`。
 - 新增颜色变量使用 `@figma-` 前缀，不使用 Figma 节点 ID、图层名、组件名命名。

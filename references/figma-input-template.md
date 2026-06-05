@@ -12,6 +12,7 @@
 - meta.json：
 - reference.tsx / 参考代码：
 - reference.tsx className 框架或规则：Tailwind / UnoCSS / CSS Modules / 自定义原子类 / 不确定
+- icon 尺寸规则备注：例如 24×24 容器 + 内部 Vector inset / 不确定
 
 ## 2. 项目技术栈
 

@@ -31,6 +31,9 @@
 - [ ] 已识别并解析 `reference.tsx` 中框架化的 `className`。
 - [ ] `className` 解析结果已转换成目标项目样式方案，没有原样照搬不兼容的 Figma 生成类名。
 - [ ] `className` 解析结果已与 `meta.json`、Figma MCP 原始数据或截图真实渲染结果校验。
+- [ ] icon 字号 / SVG 尺寸已从语义图标容器或直接包裹层的 `size-[...]` / `w/h` 识别。
+- [ ] 没有把内部 Vector / img 的 `inset[...]`、`size-full`、切片尺寸误当成最终 icon 字号。
+- [ ] 项目使用 Arco Design 时，icon 尺寸已映射到 Icon 组件 `size` 属性，没有额外包 DOM。
 - [ ] 组件之间间距由父级控制。
 - [ ] 组件内部没有无脑使用 `gap`。
 - [ ] 固定区使用 `flex: 0 0 auto`。

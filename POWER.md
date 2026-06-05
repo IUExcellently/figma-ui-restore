@@ -30,8 +30,9 @@ author: "Bel Veth"
 9. 语义化事件设计
 10. 响应式策略待确认点
 11. 资源处理方案
-12. 表格 / 表单 / 列表区域处理方案
-13. 风险点与待确认事项
+12. Icon 尺寸识别方案
+13. 表格 / 表单 / 列表区域处理方案
+14. 风险点与待确认事项
 
 输出开发前确认报告后，必须停止，不得继续生成代码，直到用户明确回复确认开发。
 
@@ -79,6 +80,9 @@ author: "Bel Veth"
 * `className` 解析结果只能作为样式事实来源之一，需要与 `meta.json`、Figma MCP 原始数据、设计截图真实渲染结果互相校验。
 * 生成业务代码时，应按目标项目样式方案输出对应 CSS / Less / SCSS / CSS Modules / Tailwind 写法；除非目标项目本身使用同一套 class 框架，否则不允许原样复制 Figma 生成的 `className`。
 * 当 `className` 与 Figma 实际渲染色值、尺寸或布局数据冲突时，以 Figma 实际渲染结果和原始数据为准，并在开发前确认报告中标记风险。
+* 识别图标尺寸时，必须从内部 `img` / `Vector` 节点向上查找最近的语义图标容器；`size-[24px]`、`w-[24px] h-[24px]` 等容器 className 优先作为 icon 字号 / SVG 宽高。
+* 图标内部的 `absolute inset[...]`、`size-full`、`max-w-none` 通常只是 Vector 切片和绘制边界，不得据此缩小最终 icon 尺寸。
+* 如果目标项目使用 Arco Design 图标组件，优先把 Figma 语义图标容器尺寸映射到 Icon 组件 `size` 属性，例如 `<icon-calendar-clock :size="24" class="rc__bottom-icon" />`；不要为了复刻 Figma 导出结构额外包一层 DOM。
 * 颜色类样式以 Figma 实际色值为最高依据；来源包括 `meta.json`、`reference.tsx`、Figma MCP 原始数据、设计截图中的真实渲染色值。
 * 字体颜色、背景色、边框色、图标色、阴影色、渐变色，以及 `hover` / `active` / `selected` 状态色，必须先查项目已有变量、design token、`custom-figma-constant.less` 是否有完全相同色值。
 * 只有变量色值与 Figma 实际色值完全一致时才复用；语义相近但色值不同的变量不允许强行复用。
@@ -112,6 +116,8 @@ author: "Bel Veth"
 * 是否忽略了组件内 `font-family`
 * 是否识别并解析了 `reference.tsx` 中框架化的 `className`
 * 是否把 `className` 解析结果转换成目标项目样式方案，而不是原样照搬
+* 是否按语义图标容器的 `size-[...]` / `w/h` 识别 icon 字号，而不是误用内部 Vector / img 尺寸
+* 项目使用 Arco Design 时，是否把 icon 尺寸映射到 Icon 组件 `size` 属性，且没有额外包 DOM
 * 颜色类样式是否遵循 Figma 实际色值优先、色值完全一致才复用变量
 * 直接写色值时是否仅写在当前 class 中，且没有使用行内 style
 * 是否存在大量 magic number

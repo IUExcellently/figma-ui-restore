@@ -38,6 +38,40 @@ font-family: ...;
 5. 如果 `className` 解析结果与 Figma 实际色值、尺寸或布局数据冲突，以 Figma 实际渲染结果和原始数据为准。
 6. 如果无法确认 class 框架含义，必须在开发前确认报告中列为风险，不得臆造映射。
 
+## Icon 尺寸识别
+
+Figma MCP / DesignToCodeWithFigma 导出的 icon 常见结构是：
+
+```tsx
+<div className="... size-[24px]" data-name="location">
+  <div className="absolute inset-[6.25%_14.58%_4.7%_14.58%]">
+    <img className="absolute block inset-0 max-w-none size-full" />
+  </div>
+</div>
+```
+
+识别规则：
+
+1. 从 `img`、`svg`、`Vector` 资源节点向上查找最近的语义图标容器，优先选择带 `data-name` 且名称不是 `Vector` / `wrapper` / `Frame` 的节点。
+2. 如果语义图标容器或其直接包裹层存在 `size-[Npx]`、`w-[Npx] h-[Npx]`、`width:N height:N` 等尺寸信息，优先作为 icon 的最终字号 / SVG 宽高。
+3. `size-full` 表示填满当前容器，不能单独作为 icon 尺寸；需要继续向上找固定尺寸容器。
+4. `absolute inset[...]` 是内部 Vector 在容器中的绘制切片，不是 icon 字号，不允许用 inset 百分比计算后缩小最终 icon。
+5. 用项目图标库替换时，`font-size`、`width`、`height` 或图标组件的 `size` 属性应等于语义图标容器尺寸。
+6. 如果图标容器为 `size-[24px]`，即使内部 Vector 有 `inset-[6.25%_14.58%_4.7%_14.58%]`，落地 icon 仍按 `24px` 处理。
+7. 如果目标项目使用 Arco Design 图标组件，优先直接设置 Icon 组件的 `size` 属性，不额外包 DOM。
+
+Arco Vue 示例：
+
+```vue
+<icon-calendar-clock :size="24" class="rc__bottom-icon" />
+```
+
+Arco React 示例：
+
+```tsx
+<IconCalendarClock size={24} className="rc__bottom-icon" />
+```
+
 ## 设计变量文件
 
 允许 AI 在全局公共样式目录创建：
@@ -134,6 +168,8 @@ Figma 实际色值来源包括：
 
 - Figma MCP 临时资源 URL 不允许直接写入生产代码。
 - 图标优先使用项目已有图标库。
+- 图标尺寸优先取 Figma 语义图标容器的 `size-[...]` / `w/h`，内部 Vector / img 的 `inset` 只作为路径绘制参考。
+- 项目使用 Arco Design 时，图标尺寸映射到 Icon 组件 `size` 属性，不为 icon 额外包 DOM。
 - Logo 优先复用项目已有品牌资源。
 - 装饰图可下载到本地 assets，或用项目已有插画替换。
 - 装饰图必须 `pointer-events: none`，不参与主内容布局。

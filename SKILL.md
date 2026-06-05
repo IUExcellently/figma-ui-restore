@@ -83,6 +83,7 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * 语义化事件设计
 * 响应式策略表
 * 资源处理方案
+* Icon 尺寸识别方案
 * 表格 / 表单 / 列表区域处理方案
 * 风险点与待确认事项
 
@@ -126,6 +127,11 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * `className` 解析结果只能作为样式事实来源之一，需要与 `meta.json`、Figma MCP 原始数据、设计截图真实渲染结果互相校验。
 * 生成业务代码时，应按目标项目样式方案输出对应 CSS / Less / SCSS / CSS Modules / Tailwind 写法；除非目标项目本身使用同一套 class 框架，否则不允许原样复制 Figma 生成的 `className`。
 * 当 `className` 与 Figma 实际渲染色值、尺寸或布局数据冲突时，以 Figma 实际渲染结果和原始数据为准，并在开发前确认报告中标记风险。
+* 识别图标尺寸时，不要只看内部 `img` / `Vector` 节点；必须从资源节点向上查找最近的语义图标容器。
+* 如果语义图标容器或其直接包裹层存在 `size-[24px]`、`w-[24px] h-[24px]`、`size-[14px]` 等 className，优先将该容器尺寸作为图标字号 / SVG 宽高。
+* `absolute inset[...]`、`size-full`、`max-w-none` 通常描述 Vector 在图标容器内的切片和内边界，不得据此把图标字号缩小成内部路径尺寸。
+* 例如 `data-name="location"` 的容器为 `size-[24px]`，内部 Vector 为 `inset-[6.25%_14.58%_4.7%_14.58%]` 时，落地 icon 尺寸仍按 `24px` 处理。
+* 如果目标项目使用 Arco Design 图标组件，优先直接映射为 `<icon-xxx :size="24" class="..." />` 或对应 React 写法 `<IconXxx size={24} className="..." />`，不要为了复刻 Figma 导出结构额外包一层 DOM。
 * 字重映射：
 
     * Regular / 细体：`font-weight: 400`
@@ -205,6 +211,9 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * Figma MCP 临时资源 URL 不允许直接作为生产资源。
 * 装饰图、图标、Logo 必须下载到本地 assets，或替换成项目已有图标 / 资源。
 * 图标优先使用项目已有图标库。
+* 从 Figma 资源替换为项目 Icon / SVG 时，必须保留 Figma 语义图标容器尺寸；例如容器 `size-[24px]` 对应 `font-size: 24px` 或 `width/height: 24px`。
+* 如果项目使用 Arco Design，Figma 语义图标容器尺寸应映射到 Arco Icon 的 `size` 属性；例如 `size-[24px]` 落地为 `<icon-calendar-clock :size="24" class="rc__bottom-icon" />`，不额外包 DOM。
+* 如果 Figma 图标结构为“语义容器 + 内部 Vector/img”，内部 Vector 的 `inset` 只能作为路径在容器内的绘制参考，不作为最终 icon 字号。
 * Logo 和品牌资源优先复用项目已有资源。
 * 装饰性资源必须标记为 decorative，不影响主布局，不参与交互。
 
@@ -216,6 +225,8 @@ First scope: backend/admin content pages with layout-boundary judgment, responsi
 * 是否忽略了组件内 `font-family`
 * 是否识别并解析了 `reference.tsx` 中框架化的 `className`
 * 是否把 `className` 解析结果转换成目标项目样式方案，而不是原样照搬
+* 是否按语义图标容器的 `size-[...]` / `w/h` 识别 icon 字号，而不是误用内部 Vector / img 尺寸
+* 项目使用 Arco Design 时，是否把 icon 尺寸映射到 Icon 组件 `size` 属性，且没有额外包 DOM
 * 颜色类样式是否遵循 Figma 实际色值优先、色值完全一致才复用变量
 * 直接写色值时是否仅写在当前 class 中，且没有使用行内 style
 * 是否存在大量 magic number
