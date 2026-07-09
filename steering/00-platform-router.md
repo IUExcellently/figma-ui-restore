@@ -84,3 +84,22 @@
 - common 可以要求“判断页面壳边界”，但不能默认是 Sidebar / Header。
 - common 可以要求“声明响应式 / 适配策略”，但不能默认是 `1440 / 1024 / 768 / 520 / 375`。
 - common 可以要求“确认单位策略”，但不能默认使用 rpx、rem 或 px。
+
+## mini-program 规则加载顺序
+
+目标平台判断为 `mini-program` 后，先读取 `steering/platforms/mini-program/README.md`，再按阶段读取：
+
+1. `00-runtime-dialect.md`
+2. `01-scope-and-shell.md`
+3. `02-rpx-size-rules.md`
+4. `03-assets-and-background-images.md`
+5. `04-components-routing-and-scroll.md`
+6. `05-qa.md`
+7. `06-performance-and-package.md`
+8. `07-mini-program-codegen-contract.md`
+9. `08-style-isolation.md`
+10. `09-text-overflow.md`
+11. `10-events.md`
+12. `11-open-capabilities.md`
+
+新增小程序规则不得成为孤立文档；入口说明、平台路由、Qoder 规则和开发前确认模板必须能引导到这些文件。

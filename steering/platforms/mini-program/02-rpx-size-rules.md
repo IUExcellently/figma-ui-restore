@@ -101,6 +101,43 @@ base = 331
 final = 332rpx
 ```
 
+## padding / margin 单位策略
+
+`padding` / `margin` 不使用“宽高白名单换算公式”，但这不代表只能写 px。
+
+处理优先级：
+
+1. 优先复用项目已有 spacing token。
+2. 如果项目 spacing token 使用 rpx，则按项目 token 写 rpx。
+3. 如果没有 spacing token，优先归一到常见间距值：
+   - 8rpx
+   - 12rpx
+   - 16rpx
+   - 20rpx
+   - 24rpx
+   - 32rpx
+   - 40rpx
+4. 不要机械还原 Figma 中所有小数、奇怪值或一次性视觉偏移值。
+5. 页面整体间距、卡片内边距、列表项间距应优先保持设计规律，而不是逐点复制 Figma 坐标。
+
+错误示例：
+
+```css
+.card {
+  padding: 17.3rpx 23.6rpx;
+  margin-bottom: 13.7rpx;
+}
+```
+
+推荐示例：
+
+```css
+.card {
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+```
+
 ## 禁止事项
 
 - 禁止四舍五入。

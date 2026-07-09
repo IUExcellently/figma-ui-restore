@@ -48,8 +48,31 @@ refresh
 - `picker`
 - `scroll-view`
 - `swiper`
+- `live-player`
+- `live-pusher`
 
-涉及 `map` / `video` / `camera` / `canvas` 等原生层组件时，需要注意层级、`z-index`、`cover-view` 等平台限制，并在风险点中说明。
+## 原生组件层级
+
+涉及以下原生层组件时，必须单独处理层级问题：
+
+- map
+- video
+- canvas
+- camera
+- live-player
+- live-pusher
+- textarea
+- input
+- picker
+- scroll-view
+- swiper
+
+规则：
+
+- 不得假设普通 `view`、`position: fixed`、`z-index` 一定能覆盖原生组件。
+- 需要覆盖时，必须判断是否使用 `cover-view` / `cover-image` 或当前平台的同层渲染能力。
+- `cover-view` 内部结构受限，不得默认嵌套任意自定义组件。
+- 如果设计稿要求浮层、弹窗、吸顶栏覆盖原生组件，必须在实现方案中说明层级策略。
 
 ## 滚动与固定区域
 
@@ -59,3 +82,60 @@ refresh
 - 底部 fixed 操作区必须避让 safe-area bottom。
 - 内容区需要底部占位，避免最后内容被固定按钮或 tabBar 遮挡。
 - 下拉刷新、上拉加载、分页请求由页面层处理。
+
+
+## 页面滚动与吸顶
+
+页面级滚动优先使用页面自然滚动。
+
+页面级滚动监听归页面层处理：
+
+- 微信原生：`onPageScroll`
+- uni-app：`onPageScroll`
+- Taro：`usePageScroll` 或页面生命周期
+
+不得为了实现吸顶、滚动显隐、触底加载，把整个页面无脑改成 `scroll-view`。
+
+## 吸顶归属
+
+实现吸顶前必须判断吸顶对象属于哪一类：
+
+- 原生 navbar 吸顶
+- 自定义 navbar 吸顶
+- tab / filter bar 吸顶
+- 局部 scroll-view 内吸顶
+- 底部 fixed 操作栏
+
+不同吸顶对象必须采用不同实现方案。
+
+## scroll-view 使用条件
+
+只有以下场景优先考虑 `scroll-view`：
+
+- 页面中存在固定高度的局部滚动区域
+- 横向分类列表
+- 弹窗内列表
+- tab 内容区域局部滚动
+- 虚拟列表或局部分页容器
+
+使用 `scroll-view` 时必须确认：
+
+- 高度
+- 滚动方向
+- 是否需要触底事件
+- 是否需要下拉刷新
+- 是否需要隐藏滚动条
+- 是否影响页面整体回弹
+- 是否影响吸顶和 fixed 布局
+
+## 滚动性能
+
+高频滚动事件中：
+
+- 不得频繁 `setData` 大对象。
+- 不得频繁更新整个列表。
+- 应节流。
+- 只更新必要字段。
+- 避免在滚动过程中触发复杂计算。
+
+事件冒泡和业务事件详见 `10-events.md`；setData、长列表和生命周期详见 `06-performance-and-package.md`。

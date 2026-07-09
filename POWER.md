@@ -52,7 +52,7 @@ author: "Bel Veth"
 
 按平台读取：
 
-* 小程序：`steering/platforms/mini-program/`
+* 小程序：先读 `steering/platforms/mini-program/README.md`，再按阶段读取 `steering/platforms/mini-program/`
 * H5：`steering/platforms/h5/`
 * Web PC 后台：`steering/platforms/web-pc-admin/`，并兼容读取 `steering/01-07`
 
@@ -79,9 +79,27 @@ author: "Bel Veth"
 
 输出开发前确认报告后，必须停止，不得继续生成代码，直到用户明确回复确认开发。
 
+## 小程序规则加载顺序
+
+目标平台为 `mini-program` 时，推荐按阶段加载：
+
+1. `00-runtime-dialect.md`
+2. `01-scope-and-shell.md`
+3. `02-rpx-size-rules.md`
+4. `03-assets-and-background-images.md`
+5. `04-components-routing-and-scroll.md`
+6. `05-qa.md`
+7. `06-performance-and-package.md`
+8. `07-mini-program-codegen-contract.md`
+9. `08-style-isolation.md`
+10. `09-text-overflow.md`
+11. `10-events.md`
+12. `11-open-capabilities.md`
+
 ## 小程序关键边界
 
 * 小程序不继承 Web PC 的 Sidebar / Header / Table / 1440 桌面断点假设。
+* 必须先确认小程序运行时方言：微信原生、uni-app、Taro React、Taro Vue 或其他；不得混写 `wx.*`、`uni.*`、`Taro.*`。
 * 写代码前必须确认 Figma 设计稿宽度 `dw`。
 * rpx 换算只用于 width、height、min/max width/height、line-height、图片宽高、图标容器宽高、卡片 / banner / 容器明确宽高。
 * `font-size`、`font-weight`、padding、margin、color、opacity、z-index、百分比、资源路径不使用宽高 rpx 换算规则。
@@ -91,6 +109,9 @@ author: "Bel Veth"
 * 图片、图标、装饰图必须让用户指定资源目录。
 * 本地背景图不得通过 WXSS `background-image` 引用，应使用 `image` 组件绝对定位复刻。
 * 状态栏、胶囊、navbar、tabBar、safe-area 必须先判断归属。
+* 必须关注 styleIsolation / externalClasses、事件冒泡、原生组件层级、页面自然滚动与吸顶归属。
+* 涉及开放能力、授权、分享、订阅消息、支付、位置、相机等能力时，不得当普通按钮处理。
+* 必须评估包体、分包、CDN、setData 性能、长列表、图片加载体验和真机验收。
 
 ## Web PC 后台兼容边界
 

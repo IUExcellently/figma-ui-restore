@@ -38,7 +38,9 @@
 
 目标平台为小程序时：
 
-- 必须确认小程序技术栈、Figma 设计稿宽度 `dw`、图片资源目录、图标资源目录、页面壳边界和验收方式。
+- 必须确认小程序运行时方言：微信原生 / uni-app / Taro React / Taro Vue / 其他。
+- 必须确认 Figma 设计稿宽度 `dw`、图片资源目录、图标资源目录、页面壳边界和验收方式。
+- 不得混写 `wx.*`、`uni.*`、`Taro.*`，除非项目已有明确兼容封装。
 - 小程序不继承 Web PC 的 Sidebar / Header / Table / 1440 桌面断点假设。
 - rpx 换算只用于 width、height、min/max width/height、line-height、图片宽高、图标容器宽高、卡片 / banner / 容器明确宽高。
 - `font-size`、`font-weight`、padding、margin、color、opacity、z-index、百分比、资源路径不使用宽高 rpx 换算规则。
@@ -49,6 +51,12 @@
 - 小程序本地背景图不得通过 WXSS `background-image` 引用，应使用 `image` 组件绝对定位复刻。
 - 图片必须按语义选择 `mode`，不得全部使用同一种 mode。
 - 状态栏、胶囊、navbar、tabBar、safe-area 必须先判断归属。
+- 必须处理 styleIsolation / externalClasses，避免页面样式、组件样式、全局样式混用。
+- 卡片整体可点且内部按钮也可点时，必须明确事件冒泡策略。
+- 涉及 map / video / canvas / camera / input / textarea 等原生组件时，必须说明 cover-view / 同层渲染策略。
+- 不得为了吸顶、滚动显隐、触底加载无脑把整个页面改成 scroll-view。
+- 涉及开放能力、授权、分享、订阅消息、支付、位置、相机等能力时，不得当普通按钮处理。
+- 必须评估包体、分包、CDN、setData 性能、长列表、图片加载体验和真机验收。
 
 ## Web PC 后台规则
 
@@ -67,6 +75,7 @@
 - 页面壳 / Layout 边界判断
 - 本次生成范围
 - 项目上下文扫描结果
+- 小程序运行时方言判断（如适用）
 - 资源目录与资源处理方案
 - 组件拆分方案
 - 数据模型草案

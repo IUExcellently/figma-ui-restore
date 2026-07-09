@@ -55,6 +55,7 @@
 
 - 目标平台：
 - 平台技术栈：微信原生 / uni-app / Taro / H5 / Vue / React / 其他
+- 小程序运行时方言：微信原生 / uni-app / Taro React / Taro Vue / 其他 / 不适用
 - 框架：
 - UI 组件库：
 - 样式方案：
@@ -130,6 +131,22 @@ Sidebar / Menu / Header 属于 Web PC 后台全局 Layout 策略。项目已有 
 - 是否允许放入分包：
 - 本地背景图处理方式：`image` 绝对定位 / 不适用
 - image mode 策略：aspectFill / aspectFit / widthFix / heightFix / scaleToFill
+
+## 7B. 小程序运行时、性能与能力确认
+
+目标平台为小程序时必须填写。
+
+- 运行时方言：微信原生 / uni-app / Taro React / Taro Vue / 其他
+- 判断依据：配置文件 / 文件扩展名 / 已有页面 / 项目依赖
+- 是否存在 styleIsolation / externalClasses 约定：
+- 是否涉及原生组件层级：map / video / canvas / camera / input / textarea / picker / scroll-view / swiper / 不涉及
+- 滚动策略：页面自然滚动 / 局部 scroll-view / 横向 scroll-view / 弹窗内 scroll-view
+- 是否存在吸顶：navbar / tab / filter bar / 局部吸顶 / 不涉及
+- 是否涉及开放能力：分享 / 订阅消息 / 获取手机号 / 支付 / 位置 / 相机 / 相册 / 客服 / web-view / 不涉及
+- 是否存在长列表：分页 / 触底加载 / 下拉刷新 / 虚拟列表 / 不涉及
+- setData / 状态更新风险：
+- 新增资源数量与包体影响：
+- 是否需要真机验收：iOS / Android / 不可用
 
 ## 8. 颜色与设计 token 映射
 

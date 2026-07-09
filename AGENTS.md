@@ -23,6 +23,7 @@
 小程序关键约束：
 
 - 小程序不继承 Web PC 的 Sidebar / Table / 1440 桌面断点假设。
+- 必须确认小程序运行时方言：微信原生 / uni-app / Taro React / Taro Vue / 其他；不得混写 `wx.*`、`uni.*`、`Taro.*`。
 - 必须确认 Figma 设计稿宽度 `dw`。
 - 宽高 rpx 换算只用于 width、height、min/max width/height、line-height、图片宽高、图标容器宽高、卡片 / banner / 容器明确宽高。
 - font-size、padding、margin 不使用宽高 rpx 换算规则。
@@ -30,6 +31,7 @@
 - 图片、图标、装饰图必须让用户指定资源目录。
 - 小程序本地背景图不得用 WXSS `background-image` 引用，应使用 `image` 组件绝对定位复刻。
 - 状态栏、胶囊、navbar、tabBar、safe-area 必须先判断归属。
+- 必须关注 styleIsolation / externalClasses、事件冒泡、原生组件层级、吸顶、setData、长列表、包体、分包、开放能力授权和真机验收。
 
 Web PC 后台关键约束：
 
