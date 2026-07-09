@@ -1,5 +1,12 @@
 # 开发完成自检清单
 
+## 目标平台
+
+- [ ] 已判断目标平台：小程序 / H5 / Web PC 后台。
+- [ ] 已读取 `steering/00-platform-router.md`。
+- [ ] 已读取公共规则和对应平台规则。
+- [ ] 未把其他平台专属规则错误套用到当前平台。
+
 ## 生成范围
 
 - [ ] 没有误生成项目已有 Layout。
@@ -73,3 +80,18 @@
 - [ ] 输出结构化自检报告。
 - [ ] chrome-devtools MCP 可用时已截图检查。
 - [ ] 不可用时已说明降级。
+
+## 小程序专项
+
+- [ ] 已确认小程序技术栈和 Figma 设计稿宽度 `dw`。
+- [ ] width / height / min/max width/height / line-height / 图片宽高 / 图标容器宽高已按小程序白名单规则转换。
+- [ ] `font-size` 未使用宽高 rpx 换算公式。
+- [ ] padding / margin 未使用宽高 rpx 换算公式。
+- [ ] 未使用四舍五入或小数 rpx。
+- [ ] 图片资源目录和图标资源目录已由用户确认。
+- [ ] Figma 临时资源 URL 未进入生产代码。
+- [ ] 本地背景图未使用 WXSS `background-image`，已使用 `image` 组件绝对定位复刻。
+- [ ] 图片 `mode` 已按语义选择。
+- [ ] 状态栏 / 胶囊 / navbar / tabBar / safe-area 边界已确认。
+- [ ] 底部 fixed 区域已避让 safe-area bottom。
+- [ ] 页面滚动和局部 `scroll-view` 边界清晰。
